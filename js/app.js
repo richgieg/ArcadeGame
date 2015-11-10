@@ -6,6 +6,10 @@ var tile = {
     height: 83
 };
 
+var getRandomInteger = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 // Enemies our player must avoid
 var Enemy = function() {
     // The image/sprite for our enemies, this uses
@@ -26,7 +30,7 @@ var Enemy = function() {
 // Initialize the enemy's position and speed
 Enemy.prototype.initialize = function() {
     // A random value from 0 to 2
-    var row = 0;
+    var row = getRandomInteger(0, 2);
 
     // Number of pixels to offset the enemy sprite on the
     // y-axis so that it fits within the designated row
@@ -37,7 +41,7 @@ Enemy.prototype.initialize = function() {
     this.y = row * tile.height + yOffset;
 
     // A random value from 100 to 500
-    this.speed = 100;
+    this.speed = getRandomInteger(100, 500);
 };
 
 // Update the enemy's position, required method for game
@@ -47,6 +51,11 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x = this.x + (this.speed * dt);
+
+    if (this.x >= ctx.canvas.width) {
+        console.log('reached the end');
+        this.initialize();
+    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -62,7 +71,12 @@ Enemy.prototype.render = function() {
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var allEnemies = [new Enemy()];
+
+// Create three enemy objects
+var allEnemies = [];
+for (var i = 0; i < 3; i++) {
+    allEnemies.push(new Enemy());
+}
 
 
 // This listens for key presses and sends the keys to your
