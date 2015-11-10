@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -94,7 +94,25 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        // player.update();
+        player.update();
+    }
+
+    /* This is called by the update function and loops through all of the
+     * objects within the allEnemies array as defined in app.js and checks
+     * to see if any of them have collided with the player object.
+     */
+    function checkCollisions() {
+        allEnemies.forEach(function(enemy) {
+            if (enemy.row === player.row) {
+                // Determine whether enemy and player objects are overlapping
+                var firstTest = enemy.rightBoundary >= player.leftBoundary;
+                var secondTest = enemy.leftBoundary <= player.rightBoundary
+                if (firstTest && secondTest) {
+                    console.log('You dead!');
+                    player.initialize();
+                }
+            }
+        });
     }
 
     /* This function initially draws the "game level", it will then call
@@ -123,8 +141,8 @@ var Engine = (function(global) {
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
+        for (row = 0; row < level.numRows; row++) {
+            for (col = 0; col < level.numCols; col++) {
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.
@@ -135,7 +153,6 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * tile.width, row * tile.height);
             }
         }
-
 
         renderEntities();
     }
@@ -151,8 +168,7 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
-        // player.render();
+        player.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -160,7 +176,6 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
     }
 
     /* Go ahead and load all of the images we know we're going to need to
