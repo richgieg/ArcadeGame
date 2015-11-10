@@ -45,8 +45,10 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
-        render();
+        if (gameIsRunning) {
+            update(dt);
+            render();
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -99,20 +101,27 @@ var Engine = (function(global) {
 
     /* This is called by the update function and loops through all of the
      * objects within the allEnemies array as defined in app.js and checks
-     * to see if any of them have collided with the player object.
+     * to see if any of them have collided with the player object. Also,
+     * there is logic to determine if the player made it to the top row.
      */
     function checkCollisions() {
-        allEnemies.forEach(function(enemy) {
+        for (var i = 0; i < allEnemies.length; i++) {
+            enemy = allEnemies[i];
             if (enemy.row === player.row) {
                 // Determine whether enemy and player objects are overlapping
                 var firstTest = enemy.rightBoundary >= player.leftBoundary;
                 var secondTest = enemy.leftBoundary <= player.rightBoundary
                 if (firstTest && secondTest) {
-                    console.log('You dead!');
-                    player.initialize();
+                    playerHit();
+                    break;
                 }
             }
-        });
+        }
+
+        // Determine whether player made it to the top row
+        if (player.row == 0) {
+            playerWins();
+        }
     }
 
     /* This function initially draws the "game level", it will then call
@@ -176,6 +185,59 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
+        player.initialize();
+        allEnemies.forEach(function(enemy) {
+            enemy.initialize();
+        });
+        gameIsRunning = true;
+    }
+
+    function playerHit() {
+        gameIsRunning = false;
+        playerHitAnimation();
+    }
+
+    function playerHitAnimation() {
+        var alpha = 0.001;
+        var factor = 1.1;
+        win.requestAnimationFrame(animationLoop);
+        function animationLoop() {
+            ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha + ')';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            alpha = alpha * factor;
+            if (alpha < 0.1) {
+                win.requestAnimationFrame(animationLoop);
+            } else {
+                // Clear any remnants that happen to get drawn outside
+                // of the background tile sprites
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                reset();
+            }
+        }
+    }
+
+    function playerWins() {
+        gameIsRunning = false;
+        playerWinsAnimation();
+    }
+
+    function playerWinsAnimation() {
+        var alpha = 0.001;
+        var factor = 1.1;
+        win.requestAnimationFrame(animationLoop);
+        function animationLoop() {
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            alpha = alpha * factor;
+            if (alpha < 0.5) {
+                win.requestAnimationFrame(animationLoop);
+            } else {
+                // Clear any remnants that happen to get drawn outside
+                // of the background tile sprites
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                reset();
+            }
+        }
     }
 
     /* Go ahead and load all of the images we know we're going to need to

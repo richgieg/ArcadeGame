@@ -60,7 +60,7 @@ var Enemy = function() {
     this.speed = 0;
 
     // Set the enemy's starting position and speed
-    this.initialize();
+    // this.initialize();
 };
 
 // Initialize the enemy's position and speed
@@ -126,7 +126,7 @@ var Player = function() {
     this.pendingMoves = [];
 
     // Initialize the player's position
-    this.initialize();
+    // this.initialize();
 };
 
 // Initialize the player's position
@@ -167,13 +167,6 @@ Player.prototype.update = function() {
         this.row = 0;
     } else if (this.row > (level.numRows - 1)) {
         this.row = level.numRows - 1;
-    }
-
-    // Determine whether player made it to the top row
-    if (this.row == 0) {
-        console.log('You win!');
-        this.row = 5;
-        this.col = 2;
     }
 
     // Calculate player's pixel position
