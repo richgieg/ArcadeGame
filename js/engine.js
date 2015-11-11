@@ -180,9 +180,7 @@ var Engine = (function(global) {
         player.render();
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
+    /* This function reinitializes the player and enemy positions
      */
     function reset() {
         player.initialize();
@@ -203,7 +201,7 @@ var Engine = (function(global) {
         win.requestAnimationFrame(animationLoop);
         function animationLoop() {
             ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha + ')';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 50, canvas.width, canvas.height - 70);
             alpha = alpha * factor;
             if (alpha < 0.1) {
                 win.requestAnimationFrame(animationLoop);
@@ -211,7 +209,9 @@ var Engine = (function(global) {
                 // Clear any remnants that happen to get drawn outside
                 // of the background tile sprites
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Reinitialize the player object
                 player.initialize();
+                // Run the game
                 gameIsRunning = true;
             }
         }
@@ -236,7 +236,9 @@ var Engine = (function(global) {
                 // Clear any remnants that happen to get drawn outside
                 // of the background tile sprites
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Reinitialize the player object
                 player.initialize();
+                // Run the game
                 gameIsRunning = true;
             }
         }
