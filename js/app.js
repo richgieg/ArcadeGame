@@ -1,4 +1,5 @@
 var gameIsRunning = false;
+var numEnemies = 3;
 
 // Globally define the size of the game map
 var level = {
@@ -134,6 +135,9 @@ Player.prototype.initialize = function() {
     // Row and column position
     this.row = 5;
     this.col = 2;
+
+    // Clear the pending moves queue
+    this.pendingMoves = [];
 };
 
 // Update the player's position
@@ -194,7 +198,7 @@ Player.prototype.handleInput = function(playerMove) {
 
 // Create enemy objects
 var allEnemies = [];
-for (var i = 0; i < 3; i++) {
+for (var i = 0; i < numEnemies; i++) {
     allEnemies.push(new Enemy());
 }
 

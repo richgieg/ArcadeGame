@@ -211,7 +211,8 @@ var Engine = (function(global) {
                 // Clear any remnants that happen to get drawn outside
                 // of the background tile sprites
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                reset();
+                player.initialize();
+                gameIsRunning = true;
             }
         }
     }
@@ -235,7 +236,8 @@ var Engine = (function(global) {
                 // Clear any remnants that happen to get drawn outside
                 // of the background tile sprites
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                reset();
+                player.initialize();
+                gameIsRunning = true;
             }
         }
     }
