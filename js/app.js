@@ -2,7 +2,7 @@
 var Game = {
     // Number of enemies
     numEnemies: 3,
-    // Number of rows and columns
+    // Size of the game's layout
     numRows: 6,
     numCols: 5,
     // Column and row sizes, in pixels
