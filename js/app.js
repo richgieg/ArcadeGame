@@ -1,42 +1,41 @@
-var numEnemies = 3;
-
-// Globally define the size of the game map
-var level = {
+// Global "static class" containing game settings
+var Game = {
+    // Number of enemies
+    numEnemies: 3,
+    // Number of rows and columns
     numRows: 6,
-    numCols: 5
-}
-
-// Globally define the background tile width and height
-var tile = {
-    width: 101,
-    height: 83
+    numCols: 5,
+    // Column and row sizes, in pixels
+    colWidthInPixels: 101,
+    rowHeightInPixels: 83,
+    // Enumeration of the possible moves the player can make
+    playerMoves: {
+        LEFT: 0,
+        UP: 1,
+        RIGHT: 2,
+        DOWN: 3
+    }
 };
 
-// Enum of possible moves for the player
-var playerMoves = {
-    LEFT: 0,
-    UP: 1,
-    RIGHT: 2,
-    DOWN: 3
+// Global "static class" containing helper methods
+var Helpers = {
+    // Convert x and y pixel coordinates to row and column coordinates
+    pixelsToRowAndColumn: function(x, y) {
+        var yOffset = -45;
+        var col = Math.floor(x / Game.colWidthInPixels);
+        var row = Math.floor((y + yOffset) / Game.rowHeightInPixels);
+        return {
+            row: row,
+            col: col
+        };
+    },
+    // Get a random integer between the min and max arguments (inclusive)
+    getRandomInteger: function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 };
 
-// Convert x and y pixel coordinates to row and column coordinates
-var pixelsToRowAndColumn = function(x, y) {
-    var yOffset = -45;
-    var col = Math.floor(x / tile.width);
-    var row = Math.floor((y + yOffset) / tile.height);
-    return {
-        row: row,
-        col: col
-    };
-};
-
-// Get a random integer between the min and max arguments (inclusive)
-var getRandomInteger = function(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-// Enemies our player must avoid
+// Enemy class that represents the enemies our player must avoid
 var Enemy = function() {
     // The image/sprite for our enemies
     this.sprite = 'images/enemy-bug.png';
@@ -63,14 +62,14 @@ var Enemy = function() {
 // Initialize the enemy's position and speed
 Enemy.prototype.initialize = function() {
     // Set the enemy's row
-    this.row = getRandomInteger(1, 3);
+    this.row = Helpers.getRandomInteger(1, 3);
 
     // Set the enemy's initial position
-    this.x = -tile.width;
-    this.y = this.row * tile.height + this.yOffset;
+    this.x = -Game.colWidthInPixels;
+    this.y = this.row * Game.rowHeightInPixels + this.yOffset;
 
     // Set the enemy's speed factor
-    this.speed = getRandomInteger(100, 400);
+    this.speed = Helpers.getRandomInteger(100, 400);
 };
 
 // Update the enemy's position
@@ -86,7 +85,7 @@ Enemy.prototype.update = function(dt) {
 
     // Calculate enemy's current left and right collision boundaries
     this.leftBoundary = this.x;
-    this.rightBoundary = this.x + tile.width;
+    this.rightBoundary = this.x + Game.colWidthInPixels;
 };
 
 // Draw the enemy on the screen
@@ -139,16 +138,16 @@ Player.prototype.update = function() {
     while (this.pendingMoves.length > 0) {
         var move = this.pendingMoves.shift();
         switch (move) {
-            case playerMoves.LEFT:
+            case Game.playerMoves.LEFT:
                 this.col--;
                 break;
-            case playerMoves.UP:
+            case Game.playerMoves.UP:
                 this.row--;
                 break;
-            case playerMoves.RIGHT:
+            case Game.playerMoves.RIGHT:
                 this.col++;
                 break;
-            case playerMoves.DOWN:
+            case Game.playerMoves.DOWN:
                 this.row++;
                 break;
         }
@@ -157,22 +156,22 @@ Player.prototype.update = function() {
     // Keep player within the boundaries of the game
     if (this.col < 0) {
         this.col = 0;
-    } else if (this.col > (level.numCols - 1)) {
-        this.col = level.numCols - 1;
+    } else if (this.col > (Game.numCols - 1)) {
+        this.col = Game.numCols - 1;
     }
     if (this.row < 0) {
         this.row = 0;
-    } else if (this.row > (level.numRows - 1)) {
-        this.row = level.numRows - 1;
+    } else if (this.row > (Game.numRows - 1)) {
+        this.row = Game.numRows - 1;
     }
 
     // Calculate player's pixel position
-    this.x = this.col * tile.width;
-    this.y = this.row * tile.height + this.yOffset;
+    this.x = this.col * Game.colWidthInPixels;
+    this.y = this.row * Game.rowHeightInPixels + this.yOffset;
 
     // Calculate player's current left and right collision boundaries
     this.leftBoundary = this.x + this.boundaryOffset;
-    this.rightBoundary = this.x + tile.width - this.boundaryOffset;
+    this.rightBoundary = this.x + Game.colWidthInPixels - this.boundaryOffset;
 };
 
 // Draw the player on the screen
@@ -195,13 +194,16 @@ var Transition = {
     playerHit: function() {
         var alpha = 0.001;
         var factor = 1.1;
+        // Return the main animation worker function to the engine
         return function() {
             ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha + ')';
             ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 70);
             alpha = alpha * factor;
             if (alpha < 0.1) {
+                // Tell the engine that we need to render another frame
                 return true;
             } else {
+                // Tell the engine we're done
                 return false;
             }
         }
@@ -209,13 +211,16 @@ var Transition = {
     playerWins: function () {
         var alpha = 0.001;
         var factor = 1.1;
+        // Return the main animation worker function to the engine
         return function() {
             ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
             ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             alpha = alpha * factor;
             if (alpha < 0.5) {
+                // Tell the engine that we need to render another frame
                 return true;
             } else {
+                // Tell the engine we're done
                 return false;
             }
         }
@@ -224,7 +229,7 @@ var Transition = {
 
 // Create enemy objects
 var allEnemies = [];
-for (var i = 0; i < numEnemies; i++) {
+for (var i = 0; i < Game.numEnemies; i++) {
     allEnemies.push(new Enemy());
 }
 
@@ -235,10 +240,10 @@ var player = new Player();
 // the player's handleInput method
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
-        37: playerMoves.LEFT,
-        38: playerMoves.UP,
-        39: playerMoves.RIGHT,
-        40: playerMoves.DOWN
+        37: Game.playerMoves.LEFT,
+        38: Game.playerMoves.UP,
+        39: Game.playerMoves.RIGHT,
+        40: Game.playerMoves.DOWN
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
@@ -251,7 +256,7 @@ document.addEventListener('touchstart', function(e) {
     var targetTouch = e.targetTouches[0];
     var x = Math.round(targetTouch.clientX - ctx.canvas.offsetLeft);
     var y = Math.round(targetTouch.clientY - ctx.canvas.offsetTop);
-    var touch = pixelsToRowAndColumn(x, y);
+    var touch = Helpers.pixelsToRowAndColumn(x, y);
 
     // Find the difference between the touch row/column values
     // the player's current row/column values
@@ -263,20 +268,20 @@ document.addEventListener('touchstart', function(e) {
     if (rowDiff && !colDiff) {
         // If the absolute row difference is positive, we move down
         if (rowDiff > 0) {
-            player.handleInput(playerMoves.DOWN);
+            player.handleInput(Game.playerMoves.DOWN);
         // Otherwise, we move up
         } else {
-            player.handleInput(playerMoves.UP);
+            player.handleInput(Game.playerMoves.UP);
         }
     // If a tile is touched, other than the one the player is in, and the
     // tile is in the same row as the player, move horizontally
     } else if (colDiff && !rowDiff) {
         // If the absolute column difference is positive, we move right
         if (colDiff > 0) {
-            player.handleInput(playerMoves.RIGHT);
+            player.handleInput(Game.playerMoves.RIGHT);
         // Otherwise, we move left
         } else {
-            player.handleInput(playerMoves.LEFT);
+            player.handleInput(Game.playerMoves.LEFT);
         }
     }
 });
