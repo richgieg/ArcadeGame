@@ -1,4 +1,3 @@
-var gameIsRunning = false;
 var numEnemies = 3;
 
 // Globally define the size of the game map
@@ -59,9 +58,6 @@ var Enemy = function() {
 
     // The enemy's speed factor
     this.speed = 0;
-
-    // Set the enemy's starting position and speed
-    // this.initialize();
 };
 
 // Initialize the enemy's position and speed
@@ -125,9 +121,6 @@ var Player = function() {
 
     // Pending moves array, used as an input processing queue
     this.pendingMoves = [];
-
-    // Initialize the player's position
-    // this.initialize();
 };
 
 // Initialize the player's position
@@ -193,6 +186,39 @@ Player.prototype.handleInput = function(playerMove) {
     // will be processed in the update method
     if (playerMove !== undefined) {
         this.pendingMoves.push(playerMove);
+    }
+};
+
+// Static class that defines animations for various transitions, such as
+// when the player collides with an enemy or the player reaches the goal
+var Transition = {
+    playerHit: function() {
+        var alpha = 0.001;
+        var factor = 1.1;
+        return function() {
+            ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha + ')';
+            ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 70);
+            alpha = alpha * factor;
+            if (alpha < 0.1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    playerWins: function () {
+        var alpha = 0.001;
+        var factor = 1.1;
+        return function() {
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            alpha = alpha * factor;
+            if (alpha < 0.5) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 };
 

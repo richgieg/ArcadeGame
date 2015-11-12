@@ -23,6 +23,7 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
+        gameIsRunning = false,
         lastTime;
 
     canvas.width = 505;
@@ -112,7 +113,9 @@ var Engine = (function(global) {
                 var firstTest = enemy.rightBoundary >= player.leftBoundary;
                 var secondTest = enemy.leftBoundary <= player.rightBoundary
                 if (firstTest && secondTest) {
-                    playerHit();
+                    renderTransition(Transition.playerHit, function() {
+                        player.initialize();
+                    });
                     break;
                 }
             }
@@ -120,7 +123,9 @@ var Engine = (function(global) {
 
         // Determine whether player made it to the top row
         if (player.row == 0) {
-            playerWins();
+            renderTransition(Transition.playerWins, function() {
+                player.initialize();
+            });
         }
     }
 
@@ -190,55 +195,22 @@ var Engine = (function(global) {
         gameIsRunning = true;
     }
 
-    function playerHit() {
+    /* This is called to render a transition animation when a turning point
+     * in the game is reached, such as when the player collides with an
+     * enemy or when the player reaches the goal.
+     */
+    function renderTransition(transitionMethod, callback) {
         gameIsRunning = false;
-        playerHitAnimation();
-    }
-
-    function playerHitAnimation() {
-        var alpha = 0.001;
-        var factor = 1.1;
-        win.requestAnimationFrame(animationLoop);
-        function animationLoop() {
-            ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha + ')';
-            ctx.fillRect(0, 50, canvas.width, canvas.height - 70);
-            alpha = alpha * factor;
-            if (alpha < 0.1) {
-                win.requestAnimationFrame(animationLoop);
+        animateMethod = transitionMethod();
+        win.requestAnimationFrame(loop);
+        function loop() {
+            if(animateMethod()) {
+                win.requestAnimationFrame(loop);
             } else {
-                // Clear any remnants that happen to get drawn outside
-                // of the background tile sprites
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // Reinitialize the player object
-                player.initialize();
-                // Run the game
-                gameIsRunning = true;
-            }
-        }
-    }
-
-    function playerWins() {
-        gameIsRunning = false;
-        playerWinsAnimation();
-    }
-
-    function playerWinsAnimation() {
-        var alpha = 0.001;
-        var factor = 1.1;
-        win.requestAnimationFrame(animationLoop);
-        function animationLoop() {
-            ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            alpha = alpha * factor;
-            if (alpha < 0.5) {
-                win.requestAnimationFrame(animationLoop);
-            } else {
-                // Clear any remnants that happen to get drawn outside
-                // of the background tile sprites
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // Reinitialize the player object
-                player.initialize();
-                // Run the game
+                // Invoke the callback, if it's present
+                if (typeof(callback) === 'function')
+                    callback();
                 gameIsRunning = true;
             }
         }
