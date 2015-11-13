@@ -83,8 +83,7 @@ python -m SimpleHTTPServer
 
 ----
 ## Stop the Web Server
-Once you're done playing the game, you can exit your browser and stop the web server. This
-step is only necessary if you decided to run your own server.
+Once you're done playing the game, you can exit your browser and stop the web server.
 
 ```
 [press Ctrl+C in the terminal to interrupt the web server]
