@@ -287,10 +287,15 @@ Score.prototype.offset = function(offset) {
 
 // Static class that defines animations for various transitions, such as
 // when the player collides with an enemy or the player reaches the goal
-var Transition = {
-    playerHit: function() {
+var Transition = (function() {
+    var obj = {};
+
+    // Private methods:
+
+    var defaultTransition = function(useRedFilter) {
         var playerImageData = Graphics.getSpriteImageData(player.sprite);
-        playerImageData = Graphics.redFilter(playerImageData);
+        if (useRedFilter)
+            playerImageData = Graphics.redFilter(playerImageData);
         var playerImage = Graphics.getImageFromImageData(playerImageData);
         var w = playerImage.width;
         var h = playerImage.height;
@@ -307,25 +312,20 @@ var Transition = {
                 return false;
             return true;
         };
-    },
-    playerWins: function () {
-        var alpha = 0.001;
-        var factor = 1.1;
-        // Return the main animation worker function to the engine
-        return function() {
-            ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
-            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            alpha = alpha * factor;
-            if (alpha < 0.5) {
-                // Tell the engine that we need to render another frame
-                return true;
-            } else {
-                // Tell the engine we're done
-                return false;
-            }
-        };
+    };
+
+    // Public methods:
+
+    obj.playerHit = function() {
+        return defaultTransition(true);
     }
-};
+
+    obj.playerWins = function () {
+        return defaultTransition(false);
+    }
+
+    return obj;
+})();
 
 // Create enemy objects
 var allEnemies = [];
