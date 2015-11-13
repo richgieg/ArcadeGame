@@ -20,9 +20,10 @@ that come after the gameplay instructions below.
 
 ----
 ## Playing the Game
-This gameplay is quite simple. You must get your character to the water without
-touching the bugs. Each time you make it to the water, a new bug will appear in
-order to make the game more challenging.
+The goal of this game is to get your character to the water without
+touching the bugs. Each time you make it to the water safely, a new bug will be
+spawned in order to make your next trip to the water a bit more challenging.
+Let's see how high of a score you can get, shall we?
 
 **Controls:**
 
@@ -45,6 +46,15 @@ Reach the water: `+15000` points and `+500` points per bug
 Collide with bug: `-5000` points
 
 Half a second of time passes: `-150` points
+
+
+```
+
+
+```
+----
+*The sections that follow are only necessary if you are trying to host the game on your system.*
+
 
 ----
 ## Install a Web Server
