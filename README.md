@@ -14,7 +14,7 @@ programming paradigm that influences your application architecture as well as
 provides performance optimizations."
 
 To play the game, check out the live version at
-[http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame). If
+[http://www.richgieg.com/arcade-game](http://www.richgieg.com/arcade-game). If
 you would like to host the game on your own system, please see the sections
 that come after the gameplay instructions below.
 
