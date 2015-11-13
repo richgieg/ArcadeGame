@@ -26,8 +26,8 @@ var Engine = (function(global) {
         gameIsRunning = false,
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = Game.CANVAS_WIDTH;
+    canvas.height = Game.CANVAS_HEIGHT;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -72,9 +72,9 @@ var Engine = (function(global) {
         main();
         setInterval(function() {
             if (gameIsRunning) {
-                score.offset(Game.scoreOffsets.timeDeduction)
+                score.offset(Game.scoreOffsets.TIME_DEDUCTION)
             }
-        }, Game.scoreTimeDeductionInterval);
+        }, Game.SCORE_TIME_DEDUCTION_INTERVAL);
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -119,7 +119,7 @@ var Engine = (function(global) {
                 var secondTest = enemy.leftBoundary <= player.rightBoundary
                 if (firstTest && secondTest) {
                     renderTransition(Transition.playerHit, function() {
-                        score.offset(Game.scoreOffsets.collision);
+                        score.offset(Game.scoreOffsets.COLLISION);
                         player.initialize();
                     });
                     break;
@@ -130,8 +130,8 @@ var Engine = (function(global) {
         // Determine whether player made it to the top row (water)
         if (player.row == 0) {
             renderTransition(Transition.playerWins, function() {
-                var scoreOffset = Game.scoreOffsets.successBase;
-                scoreOffset += Game.scoreOffsets.successPerEnemy * allEnemies.length;
+                var scoreOffset = Game.scoreOffsets.SUCCESS_BASE;
+                scoreOffset += Game.scoreOffsets.SUCCESS_PER_ENEMY * allEnemies.length;
                 score.offset(scoreOffset);
                 player.initialize();
                 newEnemy = new Enemy();
@@ -159,16 +159,14 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < Game.numRows; row++) {
-            for (col = 0; col < Game.numCols; col++) {
+        for (row = 0; row < Game.NUM_ROWS; row++) {
+            for (col = 0; col < Game.NUM_COLS; col++) {
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.
@@ -176,8 +174,8 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                var x = col * Game.colWidthInPixels;
-                var y = row * Game.rowHeightInPixels;
+                var x = col * Game.COL_WIDTH_IN_PIXELS;
+                var y = row * Game.ROW_HEIGHT_IN_PIXELS;
                 ctx.drawImage(Resources.get(rowImages[row]), x, y);
             }
         }

@@ -2,22 +2,25 @@
 
 // Global object containing game settings and variables
 var Game = {
-    // Number of enemies at the start of the game
-    numEnemies: 3,
+    // Canvas size
+    CANVAS_WIDTH: 505,
+    CANVAS_HEIGHT: 606,
     // Size of the game's layout
-    numRows: 6,
-    numCols: 5,
+    NUM_ROWS: 6,
+    NUM_COLS: 5,
     // Column and row sizes, in pixels
-    colWidthInPixels: 101,
-    rowHeightInPixels: 83,
+    COL_WIDTH_IN_PIXELS: 101,
+    ROW_HEIGHT_IN_PIXELS: 83,
+    // Number of enemies at the start of the game
+    NUM_ENEMIES: 3,
     // Score settings
     scoreOffsets: {
-        collision: -5000,
-        successBase: 15000,
-        successPerEnemy: 500,
-        timeDeduction: -150
+        COLLISION: -5000,
+        SUCCESS_BASE: 15000,
+        SUCCESS_PER_ENEMY: 500,
+        TIME_DEDUCTION: -150
     },
-    scoreTimeDeductionInterval: 500,
+    SCORE_TIME_DEDUCTION_INTERVAL: 500,
     // Enumeration of the possible moves the player can make
     playerMoves: {
         LEFT: 0,
@@ -36,8 +39,8 @@ var Helpers = {
     // Convert x and y pixel coordinates to row and column coordinates
     pixelsToRowAndColumn: function(x, y) {
         var yOffset = -45;
-        var col = Math.floor(x / Game.colWidthInPixels);
-        var row = Math.floor((y + yOffset) / Game.rowHeightInPixels);
+        var col = Math.floor(x / Game.COL_WIDTH_IN_PIXELS);
+        var row = Math.floor((y + yOffset) / Game.ROW_HEIGHT_IN_PIXELS);
         return {
             row: row,
             col: col
@@ -194,8 +197,8 @@ Enemy.prototype.initialize = function() {
     this.row = Helpers.getRandomInteger(1, 3);
 
     // Set the enemy's initial position
-    this.x = -Game.colWidthInPixels;
-    this.y = this.row * Game.rowHeightInPixels + this.yOffset;
+    this.x = -Game.COL_WIDTH_IN_PIXELS;
+    this.y = this.row * Game.ROW_HEIGHT_IN_PIXELS + this.yOffset;
 
     // Set the enemy's speed factor
     this.speed = Helpers.getRandomInteger(100, 400);
@@ -214,7 +217,7 @@ Enemy.prototype.update = function(dt) {
 
     // Calculate enemy's current left and right collision boundaries
     this.leftBoundary = this.x;
-    this.rightBoundary = this.x + Game.colWidthInPixels;
+    this.rightBoundary = this.x + Game.COL_WIDTH_IN_PIXELS;
 };
 
 // Draw the enemy on the screen
@@ -289,22 +292,22 @@ Player.prototype.update = function() {
     // Keep player within the boundaries of the game scene
     if (this.col < 0) {
         this.col = 0;
-    } else if (this.col > (Game.numCols - 1)) {
-        this.col = Game.numCols - 1;
+    } else if (this.col > (Game.NUM_COLS - 1)) {
+        this.col = Game.NUM_COLS - 1;
     }
     if (this.row < 0) {
         this.row = 0;
-    } else if (this.row > (Game.numRows - 1)) {
-        this.row = Game.numRows - 1;
+    } else if (this.row > (Game.NUM_ROWS - 1)) {
+        this.row = Game.NUM_ROWS - 1;
     }
 
     // Calculate player's pixel position
-    this.x = this.col * Game.colWidthInPixels;
-    this.y = this.row * Game.rowHeightInPixels + this.yOffset;
+    this.x = this.col * Game.COL_WIDTH_IN_PIXELS;
+    this.y = this.row * Game.ROW_HEIGHT_IN_PIXELS + this.yOffset;
 
     // Calculate player's current left and right collision boundaries
     this.leftBoundary = this.x + this.boundaryOffset;
-    this.rightBoundary = this.x + Game.colWidthInPixels - this.boundaryOffset;
+    this.rightBoundary = this.x + Game.COL_WIDTH_IN_PIXELS - this.boundaryOffset;
 };
 
 // Draw the player on the screen
@@ -349,7 +352,7 @@ Score.prototype.offset = function(offset) {
 // Create enemy objects
 var allEnemies = [];
 var i;
-for (i = 0; i < Game.numEnemies; i++) {
+for (i = 0; i < Game.NUM_ENEMIES; i++) {
     allEnemies.push(new Enemy());
 }
 
