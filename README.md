@@ -18,46 +18,29 @@ Alternatively, you can check out the live version at
 [http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame).
 
 ----
-## Install VirtualBox 4.3
-VirtualBox 4.3 is required for Vagrant to function. The steps for installing it
-vary depending on your operating system. You can find the installer for many
-operating systems [here](https://www.virtualbox.org/wiki/Download_Old_Builds_4_3).
-
+## Install a Web Server
+Due to the game's usage of certain JavaScript canvas functions, it will not operate successfully when run from the filesystem. You will need some form of web server in order to host the game. I recommend installing Python on your system, if you don't have it already. Python includes a module called SimpleHTTPServer that allows you to easily serve HTML files on your local system.
 
 ----
-## Install Vagrant
-Vagrant is required to manage the virtual machine (VM) used for executing this
-project. The VM image is automatically fetched by Vagrant when the VM is
-powered up the first time. The VM comes preconfigured with Python and
-PostgreSQL. The steps for installing Vagrant vary depending on your operating
-system. You can find the installer for many operating systems
-[here](https://www.vagrantup.com/downloads.html).
+## Run the Game
+Use a command line terminal for the following steps. This guide assumes you will use Python's SimpleHTTPServer module to host the game.
 
-
-----
-## Run the Application
-Use a command line terminal for the following steps.
-
-**Clone the repository to your local system, then launch the VM:**
+**Clone the repository to your local system, then launch the web server:**
 ```
-git clone https://github.com/richgieg/ItemCatalog.git
-cd ItemCatalog/vagrant
-vagrant up
+git clone https://github.com/richgieg/ArcadeGame.git
+cd ArcadeGame
+python -m SimpleHTTPServer
 ```
 
-*It may take several minutes for the VM to spin up when you're launching it for
-the first time, since the VM image is being fetched and the one-time
-configuration must take place. Please be patient. Once the process is complete,
-your terminal prompt will be returned, thus allowing you to execute the next
-steps.*
+*You should see a message similar to ```"Serving HTTP on 0.0.0.0 port 8000"``` in your terminal.*
 
-**Add yourself as site administrator:**
+**Use a browser to connect to your web server:**
 
-1. Open ```ItemCatalog/vagrant/seed.py``` in your favorite editor
+1. Open your favorite browser
 
-2. Edit the "email" field of the dictionary literal in the global USERS list to
-reflect your Google+ / Gmail account (replacing musicshop999), which will give
-your account administrative rights on the Music Shop site when you sign in
+2. Navigate to ```http://localhost:8000```
+
+*At this point, the game should be loaded in your browser and ready to play.*
 
 **Connect to the VM via SSH, seed the database, then run the application:**
 ```
@@ -72,120 +55,15 @@ python application.py
 http://localhost:8000
 ```
 
-**View all items in a category:**
-
-Select a category link from the navigation area.
-
-
-**View details of a specific item:**
-
-Click on the item's tile in the category or homepage layout.
+----
+## Play the Game
+This gameplay is quite simple. 
 
 
-**Authenticate:**
+----
+## Stop the Web Server
+Once you're done playing the game, you can exit your browser and stop the web server.
 
-Use the red Google+ sign-in button at the top of the page.
-
-
-**Add a new item:**
-
-1. Navigate to the category in which you'd like to add a new item
-
-2. Click the "New Item" button near the top of the page
-
-3. Fill out the form appropriately and click "Save"
-
-
-**View items you have created:**
-
-Use the "My Items" link in the navigation area.
-
-*All 28 of the site's default items are owned by the main site
-administrator account.*
-
-
-**Edit an existing item:**
-
-1. Navigate to the item you would like to edit
-
-2. Click the "Edit" button
-
-3. Fill out the form appropriately and click "Save"
-
-
-**Delete an existing item:**
-
-1. Navigate to the item you would like to delete
-
-2. Click the "Delete" button
-
-3. Answer the confirmation prompt
-
-
-**User Management:**
-
-When a new user signs in, an account will be created but will have read-only
-access to the site until approved by an administrator. When logged in as
-an account with administrator privileges, you will see a "User Management"
-navigation link. This page will allow you to change a user account from
-read-only access to either standard or administrator. Standard accounts can
-create new items. They can also edit or delete items they created. Administrator
-accounts can create new items and edit or delete any item on the site. If a
-standard user has created items, but gets demoted to read-only, they will no
-longer have the ability to edit or delete the items they created.
-
-
-**Sign Out:**
-
-Use the "Sign Out [name or email address]" link at the top of the page.
-
-
-**View JSON dump for all items:**
 ```
-http://localhost:8000/catalog.json
-```
-
-
-**View JSON dump for all items in a category:**
-```
-http://localhost:8000/guitars.json
-```
-*The word "guitars" can be replaced with any valid category.*
-
-
-**View JSON dump for a single item:**
-```
-http://localhost:8000/guitars/epiphone-pr-150-acoustic-guitar.json
-```
-*The word "guitars" can be replaced with any valid category and
-"epiphone-pr-150-acoustic-guitar" can be replaced with any valid item in the
-specified category.*
-
-
-**View XML dump for all items:**
-```
-http://localhost:8000/catalog.xml
-```
-
-**View XML dump for all items in a category:**
-```
-http://localhost:8000/guitars.xml
-```
-*The word "guitars" can be replaced with any valid category.*
-
-
-**View XML dump for a single item:**
-```
-http://localhost:8000/guitars/epiphone-pr-150-acoustic-guitar.xml
-```
-*The word "guitars" can be replaced with any valid category and
-"epiphone-pr-150-acoustic-guitar" can be replaced with any valid item in the
-specified category.*
-
-
-**Stop the application, exit the SSH session and shutdown the VM:**
-```
-[press Ctrl+C to stop the application]
-exit
-vagrant halt
+[press Ctrl+C in the terminal to interrupt the web server]
 ```
