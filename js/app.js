@@ -17,8 +17,12 @@ var Game = {
     }
 };
 
-// Global "static class" containing helper methods
+// Global "static class" containing general helper methods
 var Helpers = {
+    // Get a random integer between the min and max arguments (inclusive)
+    getRandomInteger: function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
     // Convert x and y pixel coordinates to row and column coordinates
     pixelsToRowAndColumn: function(x, y) {
         var yOffset = -45;
@@ -28,12 +32,70 @@ var Helpers = {
             row: row,
             col: col
         };
-    },
-    // Get a random integer between the min and max arguments (inclusive)
-    getRandomInteger: function(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 };
+
+// Global "static class" containing graphics helper methods
+var Graphics = (function() {
+    var obj = {};
+
+    // Create a hidden canvas to be used by any graphics helper method
+    // that requires a rendering surface to perform its duties
+    var gfxCanvas = document.createElement('canvas');
+    var gfxCtx = gfxCanvas.getContext('2d');
+    // document.body.appendChild(gfxCanvas);
+
+    var gfxImg = document.createElement('img');
+
+    // Private methods:
+
+    // Clears the hidden canvas
+    var clearGfxCanvas = function() {
+        gfxCtx.clearRect(0, 0, gfxCanvas.width, gfxCanvas.height);
+    };
+
+    // Public methods:
+
+    // Get ImageData object for the entire canvas
+    obj.getCanvasImageData = function() {
+        return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
+    // Get ImageData object for a sprite
+    obj.getSpriteImageData = function(sprite) {
+        var image = Resources.get(sprite);
+        gfxCanvas.width = image.width;
+        gfxCanvas.height = image.height;
+        clearGfxCanvas();
+        gfxCtx.drawImage(image, 0, 0);
+        return gfxCtx.getImageData(0, 0, image.width, image.height);
+    }
+
+    obj.getImageFromImageData = function(imageData) {
+        gfxCanvas.width = imageData.width;
+        gfxCanvas.height = imageData.height;
+        gfxCtx.putImageData(imageData, 0, 0);
+        gfxImg.src = gfxCanvas.toDataURL('image/png');
+        return gfxImg;
+    }
+
+    // Perform a red-wash effect on an ImageData object
+    obj.redFilter = function(imageData) {
+        var numPixels = imageData.data.length / 4;
+        for (var i = 0; i < numPixels; i++) {
+            red = imageData.data[i * 4];
+            green = imageData.data[i * 4 + 1];
+            blue = imageData.data[i * 4 + 2];
+            avg = Math.floor((red + green + blue) / 3);
+            imageData.data[i * 4] = avg;
+            imageData.data[i * 4 + 1] = 0;
+            imageData.data[i * 4 + 2] = 0;
+        }
+        return imageData;
+    }
+
+    return obj;
+})();
 
 // Enemy class that represents the enemies our player must avoid
 var Enemy = function() {
@@ -192,21 +254,24 @@ Player.prototype.handleInput = function(playerMove) {
 // when the player collides with an enemy or the player reaches the goal
 var Transition = {
     playerHit: function() {
-        var alpha = 0.001;
-        var factor = 1.1;
-        // Return the main animation worker function to the engine
+        var playerImageData = Graphics.getSpriteImageData(player.sprite);
+        playerImageData = Graphics.redFilter(playerImageData);
+        var playerImage = Graphics.getImageFromImageData(playerImageData);
+        var w = playerImage.width;
+        var h = playerImage.height;
+        var x = player.x;
+        var y = player.y;
+        var rateOfChange = 10;
         return function() {
-            ctx.fillStyle = 'rgba(255, 0, 0, ' + alpha + ')';
-            ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height - 70);
-            alpha = alpha * factor;
-            if (alpha < 0.1) {
-                // Tell the engine that we need to render another frame
-                return true;
-            } else {
-                // Tell the engine we're done
+            ctx.drawImage(playerImage, x, y, w, h);
+            w = w + rateOfChange;
+            h = h + rateOfChange;
+            x = x - (rateOfChange / 2);
+            y = y - (rateOfChange / 2);
+            if (h >= ctx.canvas.height * 2)
                 return false;
-            }
-        }
+            return true;
+        };
     },
     playerWins: function () {
         var alpha = 0.001;
@@ -223,7 +288,7 @@ var Transition = {
                 // Tell the engine we're done
                 return false;
             }
-        }
+        };
     }
 };
 

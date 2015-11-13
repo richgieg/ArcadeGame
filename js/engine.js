@@ -125,6 +125,9 @@ var Engine = (function(global) {
         if (player.row == 0) {
             renderTransition(Transition.playerWins, function() {
                 player.initialize();
+                newEnemy = new Enemy();
+                newEnemy.initialize();
+                allEnemies.push(newEnemy);
             });
         }
     }
