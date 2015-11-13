@@ -16,10 +16,10 @@ provides performance optimizations."
 To play the game, check out the live version at
 [http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame). If
 you would like to host the game on your own system, please see the sections
-that come after the gameplay instructions.
+that come after the gameplay instructions below.
 
 ----
-## Play the Game
+## Playing the Game
 This gameplay is quite simple. You must get your character to the water without
 touching the bugs. Each time you make it to the water, a new bug will appear in
 order to make the game more challenging.
