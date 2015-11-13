@@ -1,6 +1,6 @@
-// Global "static class" containing game settings
+// Global "static class" containing game settings and variables
 var Game = {
-    // Number of enemies
+    // Number of enemies at the start of the game
     numEnemies: 3,
     // Size of the game's layout
     numRows: 6,
@@ -8,6 +8,14 @@ var Game = {
     // Column and row sizes, in pixels
     colWidthInPixels: 101,
     rowHeightInPixels: 83,
+    // Score settings
+    scoreOffsets: {
+        collision: -5000,
+        successBase: 15000,
+        successPerEnemy: 500,
+        timeDeduction: -150
+    },
+    scoreTimeDeductionInterval: 500,
     // Enumeration of the possible moves the player can make
     playerMoves: {
         LEFT: 0,
@@ -160,6 +168,9 @@ var Player = function() {
     // The image/sprite for our player
     this.sprite = 'images/char-boy.png';
 
+    // The player's current score
+    this.score = 0;
+
     // Row and column position
     this.row = 0;
     this.col = 0;
@@ -250,6 +261,32 @@ Player.prototype.handleInput = function(playerMove) {
     }
 };
 
+// Object that keeps track of the player's score
+var Score = function() {
+    this.value = 0;
+};
+
+// Draw the score on the screen
+Score.prototype.render = function() {
+    ctx.clearRect(0, 0, ctx.canvas.width, 50);
+    ctx.font = 'bold 36px sans-serif'
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'black';
+    var scoreString = 'Score: ' + this.value;
+    ctx.fillText(scoreString, 500, 40);
+    ctx.strokeText(scoreString, 500, 40);
+};
+
+// Handles logic for increasing/decreasing the player's score. The argument
+// can be positive or negative.
+Score.prototype.offset = function(offset) {
+    this.value = this.value + offset;
+    // Ensure that the value never goes below 0
+    if (this.value < 0)
+        this.value = 0;
+};
+
 // Static class that defines animations for various transitions, such as
 // when the player collides with an enemy or the player reaches the goal
 var Transition = {
@@ -300,6 +337,9 @@ for (var i = 0; i < Game.numEnemies; i++) {
 
 // Create player object
 var player = new Player();
+
+// Create the score object
+var score = new Score();
 
 // This listens for key presses and sends desired move to
 // the player's handleInput method

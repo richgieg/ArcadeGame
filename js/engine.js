@@ -70,6 +70,11 @@ var Engine = (function(global) {
         reset();
         lastTime = Date.now();
         main();
+        setInterval(function() {
+            if (gameIsRunning) {
+                score.offset(Game.scoreOffsets.timeDeduction)
+            }
+        }, Game.scoreTimeDeductionInterval);
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -114,6 +119,7 @@ var Engine = (function(global) {
                 var secondTest = enemy.leftBoundary <= player.rightBoundary
                 if (firstTest && secondTest) {
                     renderTransition(Transition.playerHit, function() {
+                        score.offset(Game.scoreOffsets.collision);
                         player.initialize();
                     });
                     break;
@@ -124,6 +130,9 @@ var Engine = (function(global) {
         // Determine whether player made it to the top row
         if (player.row == 0) {
             renderTransition(Transition.playerWins, function() {
+                var scoreOffset = Game.scoreOffsets.successBase;
+                scoreOffset += Game.scoreOffsets.successPerEnemy * allEnemies.length;
+                score.offset(scoreOffset);
                 player.initialize();
                 newEnemy = new Enemy();
                 newEnemy.initialize();
@@ -187,6 +196,7 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        score.render();
         player.render();
     }
 
