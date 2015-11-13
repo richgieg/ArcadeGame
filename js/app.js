@@ -272,10 +272,8 @@ Score.prototype.render = function() {
     ctx.font = 'bold 36px sans-serif'
     ctx.textAlign = 'right';
     ctx.fillStyle = 'white';
-    ctx.strokeStyle = 'black';
     var scoreString = 'Score: ' + this.value;
     ctx.fillText(scoreString, 500, 40);
-    ctx.strokeText(scoreString, 500, 40);
 };
 
 // Handles logic for increasing/decreasing the player's score. The argument
