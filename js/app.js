@@ -1,4 +1,6 @@
-// Global "static class" containing game settings and variables
+'use strict';
+
+// Global object containing game settings and variables
 var Game = {
     // Number of enemies at the start of the game
     numEnemies: 3,
@@ -25,7 +27,7 @@ var Game = {
     }
 };
 
-// Global "static class" containing general helper methods
+// Global "static class" object containing general helper methods
 var Helpers = {
     // Get a random integer between the min and max arguments (inclusive)
     getRandomInteger: function(min, max) {
@@ -43,7 +45,7 @@ var Helpers = {
     }
 };
 
-// Global "static class" containing graphics helper methods
+// Global "static class" object containing graphics helper methods
 var Graphics = (function() {
     var obj = {};
 
@@ -51,8 +53,8 @@ var Graphics = (function() {
     // that requires a rendering surface to perform its duties
     var gfxCanvas = document.createElement('canvas');
     var gfxCtx = gfxCanvas.getContext('2d');
-    // document.body.appendChild(gfxCanvas);
 
+    // Create a hidden img element to be used by getImageFromImageData()
     var gfxImg = document.createElement('img');
 
     // Private methods:
@@ -67,7 +69,7 @@ var Graphics = (function() {
     // Get ImageData object for the entire canvas
     obj.getCanvasImageData = function() {
         return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-    }
+    };
 
     // Get ImageData object for a sprite
     obj.getSpriteImageData = function(sprite) {
@@ -77,30 +79,87 @@ var Graphics = (function() {
         clearGfxCanvas();
         gfxCtx.drawImage(image, 0, 0);
         return gfxCtx.getImageData(0, 0, image.width, image.height);
-    }
+    };
 
+    // Return an image object that is built using the pixel data from
+    // the ImageData argument. WARNING: Any code using this method should
+    // immediately render the image to the canvas before the possibility
+    // of this method getting called again by other code. The reason being
+    // that the same image object will always be returned from this method,
+    // with only the src member being updated.
     obj.getImageFromImageData = function(imageData) {
         gfxCanvas.width = imageData.width;
         gfxCanvas.height = imageData.height;
         gfxCtx.putImageData(imageData, 0, 0);
         gfxImg.src = gfxCanvas.toDataURL('image/png');
         return gfxImg;
-    }
+    };
 
     // Perform a red-wash effect on an ImageData object
     obj.redFilter = function(imageData) {
         var numPixels = imageData.data.length / 4;
-        for (var i = 0; i < numPixels; i++) {
-            red = imageData.data[i * 4];
-            green = imageData.data[i * 4 + 1];
-            blue = imageData.data[i * 4 + 2];
-            avg = Math.floor((red + green + blue) / 3);
+        var i;
+        for (i = 0; i < numPixels; i++) {
+            var red = imageData.data[i * 4];
+            var green = imageData.data[i * 4 + 1];
+            var blue = imageData.data[i * 4 + 2];
+            var avg = Math.floor((red + green + blue) / 3);
             imageData.data[i * 4] = avg;
             imageData.data[i * 4 + 1] = 0;
             imageData.data[i * 4 + 2] = 0;
         }
         return imageData;
-    }
+    };
+
+    return obj;
+})();
+
+// Static class that defines animations for various transitions, such as
+// when the player collides with an enemy or the player reaches the goal
+var Transition = (function() {
+    var obj = {};
+
+    // Private methods:
+
+    // This transition code applies a stretch effect to the player sprite.
+    // If useRedFilter is true, then the sprite turns red.
+    var defaultTransition = function(useRedFilter) {
+        var playerImageData = Graphics.getSpriteImageData(player.sprite);
+        if (useRedFilter) {
+            playerImageData = Graphics.redFilter(playerImageData);
+        }
+        var playerImage = Graphics.getImageFromImageData(playerImageData);
+        var w = playerImage.width;
+        var h = playerImage.height;
+        var x = player.x;
+        var y = player.y;
+        var rateOfChange = 10;
+        return function() {
+            ctx.drawImage(playerImage, x, y, w, h);
+            w = w + rateOfChange;
+            h = h + rateOfChange;
+            x = x - (rateOfChange / 2);
+            y = y - (rateOfChange / 2);
+            if (h >= ctx.canvas.height * 2) {
+                return false;
+            }
+            return true;
+        };
+    };
+
+    // Public methods:
+
+    // This function is passed by the engine to its renderTransition method
+    // when the player collides with an enemy.
+    obj.playerHit = function() {
+        return defaultTransition(true);
+    };
+
+    // This function is passed by the engine to its renderTransition method
+    // when the player safely reaches the water.
+    obj.playerWins = function () {
+        return defaultTransition(false);
+    };
 
     return obj;
 })();
@@ -208,8 +267,9 @@ Player.prototype.initialize = function() {
 // Update the player's position
 Player.prototype.update = function() {
     // Drain the queue while processing each pending move
+    var move;
     while (this.pendingMoves.length > 0) {
-        var move = this.pendingMoves.shift();
+        move = this.pendingMoves.shift();
         switch (move) {
             case Game.playerMoves.LEFT:
                 this.col--;
@@ -226,7 +286,7 @@ Player.prototype.update = function() {
         }
     }
 
-    // Keep player within the boundaries of the game
+    // Keep player within the boundaries of the game scene
     if (this.col < 0) {
         this.col = 0;
     } else if (this.col > (Game.numCols - 1)) {
@@ -261,7 +321,7 @@ Player.prototype.handleInput = function(playerMove) {
     }
 };
 
-// Object that keeps track of the player's score
+// An object of this class keeps track of the player's score
 var Score = function() {
     this.value = 0;
 };
@@ -269,7 +329,7 @@ var Score = function() {
 // Draw the score on the screen
 Score.prototype.render = function() {
     ctx.clearRect(0, 0, ctx.canvas.width, 50);
-    ctx.font = 'bold 36px sans-serif'
+    ctx.font = 'bold 36px sans-serif';
     ctx.textAlign = 'right';
     ctx.fillStyle = 'white';
     var scoreString = 'Score: ' + this.value;
@@ -281,55 +341,15 @@ Score.prototype.render = function() {
 Score.prototype.offset = function(offset) {
     this.value = this.value + offset;
     // Ensure that the value never goes below 0
-    if (this.value < 0)
+    if (this.value < 0) {
         this.value = 0;
+    }
 };
-
-// Static class that defines animations for various transitions, such as
-// when the player collides with an enemy or the player reaches the goal
-var Transition = (function() {
-    var obj = {};
-
-    // Private methods:
-
-    var defaultTransition = function(useRedFilter) {
-        var playerImageData = Graphics.getSpriteImageData(player.sprite);
-        if (useRedFilter)
-            playerImageData = Graphics.redFilter(playerImageData);
-        var playerImage = Graphics.getImageFromImageData(playerImageData);
-        var w = playerImage.width;
-        var h = playerImage.height;
-        var x = player.x;
-        var y = player.y;
-        var rateOfChange = 10;
-        return function() {
-            ctx.drawImage(playerImage, x, y, w, h);
-            w = w + rateOfChange;
-            h = h + rateOfChange;
-            x = x - (rateOfChange / 2);
-            y = y - (rateOfChange / 2);
-            if (h >= ctx.canvas.height * 2)
-                return false;
-            return true;
-        };
-    };
-
-    // Public methods:
-
-    obj.playerHit = function() {
-        return defaultTransition(true);
-    }
-
-    obj.playerWins = function () {
-        return defaultTransition(false);
-    }
-
-    return obj;
-})();
 
 // Create enemy objects
 var allEnemies = [];
-for (var i = 0; i < Game.numEnemies; i++) {
+var i;
+for (i = 0; i < Game.numEnemies; i++) {
     allEnemies.push(new Enemy());
 }
 
@@ -348,7 +368,6 @@ document.addEventListener('keyup', function(e) {
         39: Game.playerMoves.RIGHT,
         40: Game.playerMoves.DOWN
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
 

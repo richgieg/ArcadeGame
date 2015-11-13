@@ -43,8 +43,8 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        /* Call our update/render functions, pass along the time delta to
-         * our update function since it may be used for smooth animation.
+        /* If gameIsRunning is true, call our update/render functions,
+         * passing along the time delta to our update function.
          */
         if (gameIsRunning) {
             update(dt);
@@ -108,7 +108,7 @@ var Engine = (function(global) {
     /* This is called by the update function and loops through all of the
      * objects within the allEnemies array as defined in app.js and checks
      * to see if any of them have collided with the player object. Also,
-     * there is logic to determine if the player made it to the top row.
+     * there is logic to determine if the player made it to the water.
      */
     function checkCollisions() {
         for (var i = 0; i < allEnemies.length; i++) {
@@ -127,7 +127,7 @@ var Engine = (function(global) {
             }
         }
 
-        // Determine whether player made it to the top row
+        // Determine whether player made it to the top row (water)
         if (player.row == 0) {
             renderTransition(Transition.playerWins, function() {
                 var scoreOffset = Game.scoreOffsets.successBase;
@@ -215,6 +215,9 @@ var Engine = (function(global) {
      * enemy or when the player reaches the goal.
      */
     function renderTransition(transitionMethod, callback) {
+        // Setting gameIsRunning to false prevents the normal update
+        // and render methods from executing, thus giving some rendering
+        // control to the transition animation methods defined in app.js.
         gameIsRunning = false;
         animateMethod = transitionMethod();
         win.requestAnimationFrame(loop);
