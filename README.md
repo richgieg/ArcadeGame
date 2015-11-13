@@ -13,35 +13,10 @@ great opportunity to practice object-oriented programming, an important
 programming paradigm that influences your application architecture as well as
 provides performance optimizations."
 
-To run the game, please follow the steps in the sections below.
-Alternatively, you can check out the live version at
-[http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame). Instructions
-for playing the game can be found near the end of this README.
-
-----
-## Install a Web Server
-Due to the game's usage of certain JavaScript canvas functions, it will not operate successfully when run from the filesystem. You will need some form of web server in order to host the game. I recommend installing Python on your system, if you don't have it already. Python includes a module called SimpleHTTPServer that allows you to easily serve HTML files on your local system.
-
-----
-## Run the Game
-Use a command line terminal for the following steps. This guide assumes you will use Python's SimpleHTTPServer module to host the game.
-
-**Clone the repository to your local system, then launch the web server:**
-```
-git clone https://github.com/richgieg/ArcadeGame.git
-cd ArcadeGame
-python -m SimpleHTTPServer
-```
-
-*You should see a message similar to ```"Serving HTTP on 0.0.0.0 port 8000"``` in your terminal.*
-
-**Use a browser to connect to your web server:**
-
-1. Open your favorite browser
-
-2. Navigate to ```http://localhost:8000```
-
-*At this point, the game should be loaded in your browser and ready to play.*
+To play the game, check out the live version at
+[http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame). If
+you would like to host the game on your own system, please see the sections
+that come after the gameplay instructions.
 
 ----
 ## Play the Game
@@ -71,6 +46,30 @@ Collide with bug: `-5000` points
 
 Half a second of time passes: `-150` points
 
+----
+## Install a Web Server
+Due to the game's usage of certain JavaScript canvas functions, it will not operate successfully when run from the filesystem. You will need some form of web server in order to host the game. I recommend installing Python on your system, if you don't have it already. Python includes a module called SimpleHTTPServer that allows you to easily serve HTML files on your local system.
+
+----
+## Run the Game
+Use a command line terminal for the following steps. This guide assumes you will use Python's SimpleHTTPServer module to host the game.
+
+**Clone the repository to your local system, then launch the web server:**
+```
+git clone https://github.com/richgieg/ArcadeGame.git
+cd ArcadeGame
+python -m SimpleHTTPServer
+```
+
+*You should see a message similar to ```"Serving HTTP on 0.0.0.0 port 8000"``` in your terminal.*
+
+**Use a browser to connect to your web server:**
+
+1. Open your favorite browser
+
+2. Navigate to ```http://localhost:8000```
+
+*At this point, the game should be loaded in your browser and ready to play.*
 
 ----
 ## Stop the Web Server
