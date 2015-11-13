@@ -20,10 +20,13 @@ that come after the gameplay instructions below.
 
 ----
 ## Playing the Game
-The goal of this game is to get your character to the water without
-touching the bugs. Each time you make it to the water safely, a new bug will be
-spawned in order to make your next trip to the water a bit more challenging.
-Let's see how high of a score you can get, shall we?
+The goal of this game is to get your character to the water. Sounds simple, right?
+Well, it's not quite that easy... You see, there are bugs moving at varying speeds
+on the paved-block portion of the scene. If you collide with a bug, your character
+will be moved back to the original starting position and your score will be reduced.
+On the other hand, each time you make it to the water safely your score will be increased
+generously. But, immediately after the short celebration a new bug will be spawned in order to make your
+next trip to the water a bit more challenging. Let's see how high of a score you can get, shall we?
 
 **Controls:**
 
