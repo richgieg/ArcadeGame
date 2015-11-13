@@ -15,7 +15,8 @@ provides performance optimizations."
 
 To run the game, please follow the steps in the sections below.
 Alternatively, you can check out the live version at
-[http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame).
+[http://richgieg.github.io/ArcadeGame](http://richgieg.github.io/ArcadeGame). Instructions
+for playing the game can be found near the end of this README.
 
 ----
 ## Install a Web Server
@@ -42,27 +43,39 @@ python -m SimpleHTTPServer
 
 *At this point, the game should be loaded in your browser and ready to play.*
 
-**Connect to the VM via SSH, seed the database, then run the application:**
-```
-vagrant ssh
-cd /vagrant
-python seed.py
-python application.py
-```
-
-**Navigate to the following URL in your browser:**
-```
-http://localhost:8000
-```
-
 ----
 ## Play the Game
-This gameplay is quite simple. 
+This gameplay is quite simple. You must get your character to the water without
+touching the bugs. Each time you make it to the water, a new bug will appear in
+order to make the game more challenging.
+
+**Controls:**
+
+If you're playing the game on a computer with a keyboard, you can move your character
+by using the `UP`, `DOWN`, `LEFT` and `RIGHT` arrow keys. These are the only keys you
+need to worry about for playing this game.
+
+If you're using a touchscreen device, such as an iPad, you can tap directly on your
+screen to move your character. To move `UP`, touch a tile above your
+character, but in the same column. To move `DOWN`, touch a tile below
+your character, but in the same column. To move `LEFT`, touch a tile to the left of
+your character, but in the same row. To move `RIGHT`, touch a tile to
+the right of your character, but in the same row. These are the only movements
+you need to worry about for playing this game.
+
+**Scoring system:**
+
+Reach the water: `+15000` points and `+500` points per bug
+
+Collide with bug: `-5000` points
+
+Half a second of time passes: `-150` points
 
 
 ----
 ## Stop the Web Server
-Once you're done playing the game, you can exit your browser and stop the web server.
+Once you're done playing the game, you can exit your browser and stop the web server. This
+step is only necessary if you decided to run your own server.
 
 ```
 [press Ctrl+C in the terminal to interrupt the web server]
